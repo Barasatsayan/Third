@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD Operation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background: #f2f6fc;
+    }
+
+    .card {
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-weight: 700;
+    }
+
+    .form-control {
+      border-radius: 0.375rem;
+    }
+
+    table th, table td {
+      vertical-align: middle !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-4">
+    <div class="card">
+      <div class="card-header bg-primary text-white text-center">
+        <h1>CRUD OPERATION</h1>
+      </div>
+      <div class="card-body">
+        <form id="form" class="row g-3">
+          <div class="col-md-6">
+            <label for="i1" class="form-label">User ID</label>
+            <input type="text" id="i1" class="form-control" placeholder="Enter user ID">
+          </div>
+          <div class="col-md-6">
+            <label for="i2" class="form-label">Password</label>
+            <input type="password" id="i2" class="form-control" placeholder="Enter password">
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button type="submit" class="btn btn-success" id="btn">Submit</button>
+          </div>
+        </form>
+        <div id="msg"></div>
+      </div>
+    </div>
+
+    <div class="table-responsive mt-4">
+      <table class="table table-striped table-bordered text-center align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>SL NO</th>
+            <th>USER ID</th>
+            <th>PASSWORD</th>
+            <th>UPDATE</th>
+            <th>DELETE</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <!-- JavaScript will inject content here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let arr = [
+      { id: "E01", password: 1234 },
+      { id: "E02", password: 5678 },
+      { id: "E03", password: 9012 },
+      { id: "E04", password: 3456 },
+      { id: "E05", password: 7890 },
+    ];
+
+    let tbody = document.getElementById("tbody");
+
+    function loaddata() {
+      let content = "";
+      arr.forEach(function (e, key) {
+        content += `
+          <tr>
+            <td>${key + 1}</td>
+            <td>${e.id}</td>
+            <td>${e.password}</td>
+            <td><button class="btn btn-warning btn-sm" onclick='updateData(${key + 1})'>Edit</button></td>
+            <td><button class="btn btn-danger btn-sm" onclick='deleteData(${key + 1})'>Delete</button></td>
+          </tr>`;
+      });
+      tbody.innerHTML = content;
+    }
+
+    let form = document.getElementById("form");
+    let edit = null;
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let i1 = document.getElementById("i1").value.trim();
+      let i2 = document.getElementById("i2").value.trim();
+
+      if (i1 === "" || i2 === "") {
+        alert("Please fill all the fields");
+        return;
+      }
+
+      if (edit === null) {
+        arr.push({ id: i1, password: i2 });
+        showMessage("Inserted Successfully!", "success");
+      } else {
+        arr[edit].id = i1;
+        arr[edit].password = i2;
+        showMessage("Updated Successfully!", "primary");
+        document.getElementById("btn").innerHTML = "Submit";
+        document.getElementById("btn").className = "btn btn-success";
+        edit = null;
+      }
+
+      loaddata();
+      resetForm();
+    });
+
+    function resetForm() {
+      document.getElementById("form").reset();
+      document.getElementById("i2").type = "password";
+    }
+
+    function deleteData(index) {
+      if (confirm("Are you sure you want to delete this user?")) {
+        arr.splice(index - 1, 1);
+        loaddata();
+        showMessage("Deleted Successfully!", "danger");
+      }
+    }
+
+    function updateData(index) {
+      document.getElementById("i1").value = arr[index - 1].id;
+      document.getElementById("i2").value = arr[index - 1].password;
+      document.getElementById("i2").type = "text";
+      document.getElementById("btn").innerHTML = "Update";
+      document.getElementById("btn").className = "btn btn-warning";
+      edit = index - 1;
+    }
+
+    function showMessage(message, type) {
+      document.getElementById("msg").innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show mt-3 text-center" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+    }
+
+    loaddata();
+  </script>
+</body>
+
+</html>
